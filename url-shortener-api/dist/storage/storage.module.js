@@ -6,40 +6,41 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StorageModule = exports.StorageInterfaceImpl = void 0;
+exports.StorageModule = void 0;
 const common_1 = require("@nestjs/common");
 const redis_storage_service_1 = require("./redis-storage.service");
 const nestjs_redis_1 = require("@liaoliaots/nestjs-redis");
 const typeorm_1 = require("@nestjs/typeorm");
+const postgres_entity_1 = require("./postgres.entity");
 const postgres_storage_service_1 = require("./postgres-storage.service");
-const typeorm_2 = require("typeorm");
-class StorageInterfaceImpl extends redis_storage_service_1.RedisStorageService {
-}
-exports.StorageInterfaceImpl = StorageInterfaceImpl;
+const storage_interface_1 = require("./storage.interface");
+const dotenv = require("dotenv");
+dotenv.config();
 const redisConfig = {
     imports: [
         nestjs_redis_1.RedisModule.forRootAsync({
             useFactory: () => ({
                 config: {
                     host: process.env.REDIS_HOST,
-                    port: parseInt(process.env.REDIS_PORT),
+                    port: parseInt(process.env.REDIS_PORT.trim(), 10),
                 },
             }),
         }),
     ],
     providers: [
         {
-            provide: StorageInterfaceImpl,
+            provide: storage_interface_1.StorageInterfaceImpl,
             useFactory: (redisService) => {
                 return new redis_storage_service_1.RedisStorageService(redisService);
             },
             inject: [nestjs_redis_1.RedisService],
         },
     ],
-    exports: [StorageInterfaceImpl],
+    exports: [storage_interface_1.StorageInterfaceImpl],
 };
 const postgresConfig = {
     imports: [
+        typeorm_1.TypeOrmModule.forFeature([postgres_entity_1.PostgresEntity]),
         typeorm_1.TypeOrmModule.forRootAsync({
             useFactory: () => ({
                 type: 'postgres',
@@ -54,15 +55,16 @@ const postgresConfig = {
         }),
     ],
     providers: [
+        postgres_storage_service_1.PostgresStorageService,
         {
-            provide: StorageInterfaceImpl,
-            useFactory: (repositoryPostgresEntity) => {
-                return new postgres_storage_service_1.PostgresStorageService(repositoryPostgresEntity);
+            provide: storage_interface_1.StorageInterfaceImpl,
+            useFactory: (postgresStorageService) => {
+                return postgresStorageService;
             },
-            inject: [(typeorm_2.Repository)],
+            inject: [postgres_storage_service_1.PostgresStorageService],
         },
     ],
-    exports: [StorageInterfaceImpl],
+    exports: [storage_interface_1.StorageInterfaceImpl],
 };
 let StorageModule = class StorageModule {
 };

@@ -1,4 +1,4 @@
-import { StorageInterfaceImpl } from 'src/storage/storage.module';
+import { StorageInterfaceImpl } from '../storage/storage.interface';
 export declare class UrlShortenerService {
     private storage;
     private readonly logger;

@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UrlShortenerService = void 0;
 const common_1 = require("@nestjs/common");
 const crypto_1 = require("crypto");
-const storage_module_1 = require("../storage/storage.module");
+const storage_interface_1 = require("../storage/storage.interface");
 let UrlShortenerService = UrlShortenerService_1 = class UrlShortenerService {
     constructor(storage) {
         this.storage = storage;
@@ -70,7 +70,7 @@ let UrlShortenerService = UrlShortenerService_1 = class UrlShortenerService {
 };
 UrlShortenerService = UrlShortenerService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [storage_module_1.StorageInterfaceImpl])
+    __metadata("design:paramtypes", [storage_interface_1.StorageInterfaceImpl])
 ], UrlShortenerService);
 exports.UrlShortenerService = UrlShortenerService;
 //# sourceMappingURL=url-shortener.service.js.map
